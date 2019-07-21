@@ -3,8 +3,7 @@ package com.tigerit.exam;
 
 import static com.tigerit.exam.IO.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * All of your application logic should be placed inside this class.
@@ -81,6 +80,8 @@ public class Solution implements Runnable {
                 }
 
                 Table result = db.query(query);
+                Collections.sort(result.Records, new RecordSort());
+
                 String line = "";
 
                 for(int j=0;j<result.IdxName.length;j++) {
@@ -326,6 +327,18 @@ public class Solution implements Runnable {
             System.out.println("Join on: " + On[0] + " " + On[1]);
 
             System.out.println("--------------------");
+        }
+    }
+
+    class RecordSort implements Comparator<Tuple> {
+        public int compare(Tuple tuple1, Tuple tuple2) {
+            for(int i=0;i<tuple1.data.length;i++) {
+                if(tuple1.data[i]!=tuple2.data[i]) {
+                    return tuple1.data[i] - tuple2.data[i];
+                }
+            }
+            
+            return 0;
         }
     }
 }
