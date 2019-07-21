@@ -40,9 +40,9 @@ public class Solution implements Runnable {
             }
 
             db.generateIndex();
-            //db.print();
-
             int numQuery = readLineAsInteger();
+
+            printLine("Test: " + (t+1));
 
             for(int i=0;i<numQuery;i++) {
                 Query query = new Query();
@@ -81,7 +81,32 @@ public class Solution implements Runnable {
                 }
 
                 Table result = db.query(query);
-                result.print();
+                String line = "";
+
+                for(int j=0;j<result.IdxName.length;j++) {
+                    if(j!=0) {
+                        line += " ";
+                    }
+
+                    line += result.IdxName[j];
+                }
+
+                printLine(line);
+
+                for(int j=0;j<result.Records.size();j++) {
+                    line = "";
+
+                    for(int k=0;k<result.Records.get(j).data.length;k++) {
+                        if(k!=0) {
+                            line += " ";
+                        }
+                        line += result.Records.get(j).data[k];
+                    }
+
+                    printLine(line);
+                }
+
+                printLine("");
                 readLine();
             }
         }
@@ -123,7 +148,6 @@ public class Solution implements Runnable {
             } else {
                 query.populate();
             }
-            query.print();
 
             return table1.join(table2, query);
         }
