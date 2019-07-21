@@ -57,7 +57,7 @@ public class Solution implements Runnable {
                     String[] values = parseValue(select[j], "\\.", 2);
 
                     query.Select[0].add(values[0]);
-                    query.Select[1].add(values[1]); 
+                    query.Select[1].add(values[1]);
                 }
 
                 for(int j=0;j<2;j++) {
@@ -80,7 +80,7 @@ public class Solution implements Runnable {
                     }
                 }
 
-                query.print();
+                db.query(query);
                 readLine();
             }
         }
@@ -111,6 +111,19 @@ public class Solution implements Runnable {
                 Tables[i].generateIndex();
                 TableID.put(Tables[i].Name, i);
             }
+        }
+
+        public void query(Query query) {
+            Table table1 = Tables[TableID.get(query.Tables[0])];
+            Table table2 = Tables[TableID.get(query.Tables[1])];
+
+            if(query.Select[0].size()==0) {
+                query.populate(table1, table2);
+            } else {
+                query.populate();
+            }
+            
+            query.print();
         }
 
         // TODO remove this function
@@ -193,6 +206,28 @@ public class Solution implements Runnable {
             Tables = new String[2];
             Rename = new String[2];
             On = new String[2];
+        }
+
+        public void populate() {
+            for(int i=0;i<Select[0].size();i++) {
+                if(Select[0].get(i).equals(Rename[0])) {
+                    Select[0].set(i, Tables[0]);
+                } else {
+                    Select[0].set(i, Tables[1]);
+                }
+            }
+        }
+
+        public void populate(Table table) {
+            for(int i=0;i<table.IdxName.length;i++) {
+                Select[0].add(table.Name);
+                Select[1].add(table.IdxName[i]);
+            }
+        }
+
+        public void populate(Table table1, Table table2) {
+            populate(table1);
+            populate(table2);
         }
 
         // TODO remove this function
