@@ -212,7 +212,7 @@ public class Solution implements Runnable {
                     tuple.data[i] = table1.Records.get(idx1).data[id];
                 } else {
                     int id = table2.IdxID.get(query.Select[1].get(i));
-                    tuple.data[i] = table2.Records.get(idx1).data[id];
+                    tuple.data[i] = table2.Records.get(idx2).data[id];
                 }
             }
             Records.add(tuple);
