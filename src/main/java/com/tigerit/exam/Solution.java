@@ -28,19 +28,19 @@ public class Solution implements Runnable {
 
                 int[] vals = toInt(parseValue(readLine(), " ", 2));
                 table.IdxName =  parseValue(readLine(), " ", vals[0]);
-                table.Records = new Tuple[vals[1]];
+                table.Records = new ArrayList<Tuple>();
 
                 for(int j=0;j<vals[1];j++) {
                     Tuple tuple = new Tuple();
                     tuple.data = toInt(parseValue(readLine(), " ", vals[0]));
-                    table.Records[j] = tuple;
+                    table.Records.add(tuple);
                 }
                 
                 db.Tables[i] = table;
             }
 
             db.generateIndex();
-            db.print();
+            //db.print();
 
             int numQuery = readLineAsInteger();
 
@@ -80,7 +80,8 @@ public class Solution implements Runnable {
                     }
                 }
 
-                db.query(query);
+                Table result = db.query(query);
+                result.print();
                 readLine();
             }
         }
@@ -113,7 +114,7 @@ public class Solution implements Runnable {
             }
         }
 
-        public void query(Query query) {
+        public Table query(Query query) {
             Table table1 = Tables[TableID.get(query.Tables[0])];
             Table table2 = Tables[TableID.get(query.Tables[1])];
 
@@ -122,8 +123,9 @@ public class Solution implements Runnable {
             } else {
                 query.populate();
             }
-            
             query.print();
+
+            return table1.join(table2, query);
         }
 
         // TODO remove this function
@@ -144,7 +146,7 @@ public class Solution implements Runnable {
         String Name;
         String[] IdxName;
         HashMap<String, Integer> IdxID;
-        Tuple[] Records;
+        ArrayList<Tuple> Records;
 
         public void generateIndex() {
             IdxID = new HashMap<String, Integer>();
@@ -152,6 +154,53 @@ public class Solution implements Runnable {
             for(int i=0;i<IdxName.length;i++) {
                 IdxID.put(IdxName[i], i);
             }
+        }
+
+        public void populate(Query query) {
+            IdxName = new String[query.Select[1].size()];
+
+            for(int i=0;i<query.Select[1].size();i++) {
+                IdxName[i] = query.Select[1].get(i);
+            }
+
+            generateIndex();
+        }
+
+        public void populate(Table table1, Table table2, Query query) {
+            int id1 = table1.IdxID.get(query.On[0]);
+            int id2 = table2.IdxID.get(query.On[1]);
+
+            for(int i=0;i<table1.Records.size();i++) {
+                for(int j=0;j<table2.Records.size();j++) {
+                    if(table1.Records.get(i).data[id1]==table2.Records.get(j).data[id2]) {
+                        populate(table1, table2, i, j, query);
+                    }
+                }
+            }
+        }
+
+        public void populate(Table table1, Table table2, int idx1, int idx2, Query query) {
+            Tuple tuple = new Tuple();
+            tuple.data = new int[query.Select[0].size()];
+            for(int i=0;i<query.Select[0].size();i++) {
+                if(query.Select[0].get(i).equals(table1.Name)) {
+                    int id = table1.IdxID.get(query.Select[1].get(i));
+                    tuple.data[i] = table1.Records.get(idx1).data[id];
+                } else {
+                    int id = table2.IdxID.get(query.Select[1].get(i));
+                    tuple.data[i] = table2.Records.get(idx1).data[id];
+                }
+            }
+            Records.add(tuple);
+        }
+
+        public Table join(Table table, Query query) {
+            Table result = new Table();
+            result.Name = "result";
+            result.Records = new ArrayList<Tuple>();
+            result.populate(query);
+            result.populate(this, table, query);
+            return result;
         }
 
         // TODO remove this function
@@ -172,8 +221,8 @@ public class Solution implements Runnable {
             System.out.println();
             System.out.println("--------------------");
 
-            for(int i=0;i<Records.length;i++) {
-                Records[i].print();
+            for(int i=0;i<Records.size();i++) {
+                Records.get(i).print();
             }
 
             System.out.println("--------------------");
