@@ -152,19 +152,6 @@ public class Solution implements Runnable {
 
             return table1.join(table2, query);
         }
-
-        // TODO remove this function
-        public void print() {
-            for(String key : TableID.keySet()) {
-                System.out.print(key + ": " + TableID.get(key) + " ");
-            }
-
-            System.out.println();
-
-            for(int i=0;i<Tables.length;i++) {
-                Tables[i].print();
-            }
-        }
     }
 
     public class Table {
@@ -227,44 +214,10 @@ public class Solution implements Runnable {
             result.populateRecord(this, table, query);
             return result;
         }
-
-        // TODO remove this function
-        public void print() {
-            System.out.println("--------------------");
-            System.out.println("Table name: " + Name);
-
-            for(String key : IdxID.keySet()) {
-                System.out.print(key + ": " + IdxID.get(key) + " ");
-            }
-
-            System.out.println();
-
-            for(int i=0;i<IdxName.length;i++) {
-                System.out.print(i + "." + IdxName[i] + " ");
-            }
-
-            System.out.println();
-            System.out.println("--------------------");
-
-            for(int i=0;i<Records.size();i++) {
-                Records.get(i).print();
-            }
-
-            System.out.println("--------------------");
-        }
     }
 
     public class Tuple {
         int[] data;
-
-        // TODO remove this function
-        public void print() {
-            for(int i=0;i<data.length;i++) {
-                System.out.print(data[i] + " ");
-            }
-
-            System.out.println();
-        }
     }
 
     public class Query {
@@ -302,31 +255,6 @@ public class Solution implements Runnable {
         public void populateSelect(Table table1, Table table2) {
             populateSelect(table1);
             populateSelect(table2);
-        }
-
-        // TODO remove this function
-        public void print() {
-            System.out.println("--------------------");
-            System.out.println("Select: ");
-
-            for(int i=0;i<2;i++) {
-                for(int j=0;j<Select[i].size();j++) {
-                    System.out.print(Select[i].get(j) + " ");
-                }
-
-                System.out.println();
-            }
-
-            System.out.println();
-            System.out.println("Tables: " + Tables[0] + " " +  Tables[1]);
-
-            System.out.println();
-            System.out.println("Rename: " + Rename[0] + " " +  Rename[1]);
-
-            System.out.println();
-            System.out.println("Join on: " + On[0] + " " + On[1]);
-
-            System.out.println("--------------------");
         }
     }
 
