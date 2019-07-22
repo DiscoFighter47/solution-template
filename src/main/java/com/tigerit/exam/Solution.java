@@ -145,9 +145,9 @@ public class Solution implements Runnable {
             Table table2 = Tables[TableID.get(query.Tables[1])];
 
             if(query.Select[0].size()==0) {
-                query.populate(table1, table2);
+                query.populateSelect(table1, table2);
             } else {
-                query.populate();
+                query.refactorSelect();
             }
 
             return table1.join(table2, query);
@@ -181,7 +181,7 @@ public class Solution implements Runnable {
             }
         }
 
-        public void populate(Query query) {
+        public void populateIndex(Query query) {
             IdxName = new String[query.Select[1].size()];
 
             for(int i=0;i<query.Select[1].size();i++) {
@@ -191,20 +191,20 @@ public class Solution implements Runnable {
             generateIndex();
         }
 
-        public void populate(Table table1, Table table2, Query query) {
+        public void populateRecord(Table table1, Table table2, Query query) {
             int id1 = table1.IdxID.get(query.On[0]);
             int id2 = table2.IdxID.get(query.On[1]);
 
             for(int i=0;i<table1.Records.size();i++) {
                 for(int j=0;j<table2.Records.size();j++) {
                     if(table1.Records.get(i).data[id1]==table2.Records.get(j).data[id2]) {
-                        populate(table1, table2, i, j, query);
+                        populateTuple(table1, table2, i, j, query);
                     }
                 }
             }
         }
 
-        public void populate(Table table1, Table table2, int idx1, int idx2, Query query) {
+        public void populateTuple(Table table1, Table table2, int idx1, int idx2, Query query) {
             Tuple tuple = new Tuple();
             tuple.data = new int[query.Select[0].size()];
             for(int i=0;i<query.Select[0].size();i++) {
@@ -223,8 +223,8 @@ public class Solution implements Runnable {
             Table result = new Table();
             result.Name = "result";
             result.Records = new ArrayList<Tuple>();
-            result.populate(query);
-            result.populate(this, table, query);
+            result.populateIndex(query);
+            result.populateRecord(this, table, query);
             return result;
         }
 
@@ -282,7 +282,7 @@ public class Solution implements Runnable {
             On = new String[2];
         }
 
-        public void populate() {
+        public void refactorSelect() {
             for(int i=0;i<Select[0].size();i++) {
                 if(Select[0].get(i).equals(Rename[0])) {
                     Select[0].set(i, Tables[0]);
@@ -292,16 +292,16 @@ public class Solution implements Runnable {
             }
         }
 
-        public void populate(Table table) {
+        public void populateSelect(Table table) {
             for(int i=0;i<table.IdxName.length;i++) {
                 Select[0].add(table.Name);
                 Select[1].add(table.IdxName[i]);
             }
         }
 
-        public void populate(Table table1, Table table2) {
-            populate(table1);
-            populate(table2);
+        public void populateSelect(Table table1, Table table2) {
+            populateSelect(table1);
+            populateSelect(table2);
         }
 
         // TODO remove this function
